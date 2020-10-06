@@ -75,6 +75,15 @@ extern "C" {
 #define IS_ZEBRA_DEBUG_RECV   (zebra_debug_packet & ZEBRA_DEBUG_RECV)
 #define IS_ZEBRA_DEBUG_DETAIL (zebra_debug_packet & ZEBRA_DEBUG_DETAIL)
 
+#define IS_ZEBRA_DEBUG_KERNEL_INTERFACE (zebra_debug_kernel & ZEBRA_DEBUG_KERNEL)
+#define IS_ZEBRA_DEBUG_KERNEL_ROUTE (zebra_debug_kernel & ZEBRA_DEBUG_KERNEL)
+#define IS_ZEBRA_DEBUG_KERNEL_NEXTLINK (zebra_debug_kernel & ZEBRA_DEBUG_KERNEL)
+#define IS_ZEBRA_DEBUG_KERNEL_IFACE (zebra_debug_kernel & ZEBRA_DEBUG_KERNEL)
+#define IS_ZEBRA_DEBUG_KERNEL_NEXTHOP (zebra_debug_kernel & ZEBRA_DEBUG_KERNEL)
+#define IS_ZEBRA_DEBUG_KERNEL_MPLS (zebra_debug_kernel & ZEBRA_DEBUG_KERNEL)
+#define IS_ZEBRA_DEBUG_KERNEL_NEIGHBOR (zebra_debug_kernel & ZEBRA_DEBUG_KERNEL)
+#define IS_ZEBRA_DEBUG_KERNEL_VLAN (zebra_debug_kernel & ZEBRA_DEBUG_KERNEL)
+
 #define IS_ZEBRA_DEBUG_KERNEL (zebra_debug_kernel & ZEBRA_DEBUG_KERNEL)
 #define IS_ZEBRA_DEBUG_KERNEL_MSGDUMP_SEND                                     \
 	(zebra_debug_kernel & ZEBRA_DEBUG_KERNEL_MSGDUMP_SEND)

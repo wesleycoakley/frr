@@ -43,7 +43,7 @@ void zebra_ipmr_route_stats(ZAPI_HANDLER_ARGS)
 	STREAM_GET(&mroute.sg.grp, msg, 4);
 	STREAM_GETL(msg, mroute.ifindex);
 
-	if (IS_ZEBRA_DEBUG_KERNEL) {
+	if (IS_ZEBRA_DEBUG_KERNEL_ROUTE) {
 		char sbuf[40];
 		char gbuf[40];
 

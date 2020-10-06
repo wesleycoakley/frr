@@ -363,7 +363,7 @@ static int netlink_information_fetch(struct nlmsghdr *h, ns_id_t ns_id,
 		 * we don't want to spam the log file with
 		 * below messages, just ignore.
 		 */
-		if (IS_ZEBRA_DEBUG_KERNEL)
+		if (IS_ZEBRA_DEBUG_KERNEL_NETLINK)
 			zlog_debug("Received RTM_GETNEIGH, ignoring");
 		break;
 	case RTM_NEWRULE:
@@ -805,7 +805,7 @@ static int netlink_parse_error(const struct nlsock *nl, struct nlmsghdr *h,
 
 	/* If the error field is zero, then this is an ACK. */
 	if (err->error == 0) {
-		if (IS_ZEBRA_DEBUG_KERNEL) {
+		if (IS_ZEBRA_DEBUG_KERNEL_NETLINK) {
 			zlog_debug("%s: %s ACK: type=%s(%u), seq=%u, pid=%u",
 				   __func__, nl->name,
 				   nl_msg_type_to_str(err->msg.nlmsg_type),
@@ -822,7 +822,7 @@ static int netlink_parse_error(const struct nlsock *nl, struct nlmsghdr *h,
 		 && (-errnum == ENODEV || -errnum == ESRCH))
 		|| (msg_type == RTM_NEWROUTE
 		    && (-errnum == ENETDOWN || -errnum == EEXIST)))) {
-		if (IS_ZEBRA_DEBUG_KERNEL)
+		if (IS_ZEBRA_DEBUG_KERNEL_NETLINK)
 			zlog_debug("%s: error: %s type=%s(%u), seq=%u, pid=%u",
 				   nl->name, safe_strerror(-errnum),
 				   nl_msg_type_to_str(msg_type), msg_type,
@@ -842,7 +842,7 @@ static int netlink_parse_error(const struct nlsock *nl, struct nlmsghdr *h,
 		 * This is known to happen in some situations, don't log as
 		 * error.
 		 */
-		if (IS_ZEBRA_DEBUG_KERNEL)
+		if (IS_ZEBRA_DEBUG_KERNEL_NETLINK)
 			zlog_debug("%s error: %s, type=%s(%u), seq=%u, pid=%u",
 				   nl->name, safe_strerror(-errnum),
 				   nl_msg_type_to_str(msg_type), msg_type,
@@ -919,7 +919,7 @@ int netlink_parse_info(int (*filter)(struct nlmsghdr *, ns_id_t, int),
 			}
 
 			/* OK we got netlink message. */
-			if (IS_ZEBRA_DEBUG_KERNEL)
+			if (IS_ZEBRA_DEBUG_KERNEL_NETLINK)
 				zlog_debug(
 					"netlink_parse_info: %s type %s(%u), len=%d, seq=%u, pid=%u",
 					nl->name,
@@ -985,7 +985,7 @@ netlink_talk_info(int (*filter)(struct nlmsghdr *, ns_id_t, int startup),
 	n->nlmsg_seq = nl->seq;
 	n->nlmsg_pid = nl->snl.nl_pid;
 
-	if (IS_ZEBRA_DEBUG_KERNEL)
+	if (IS_ZEBRA_DEBUG_KERNEL_NETLINK)
 		zlog_debug(
 			"netlink_talk: %s type %s(%u), len=%d seq=%u flags 0x%x",
 			nl->name, nl_msg_type_to_str(n->nlmsg_type),
@@ -1188,7 +1188,7 @@ static void nl_batch_send(struct nl_batch *bth)
 	bool err = false;
 
 	if (bth->curlen != 0 && bth->zns != NULL) {
-		if (IS_ZEBRA_DEBUG_KERNEL)
+		if (IS_ZEBRA_DEBUG_KERNEL_NETLINK)
 			zlog_debug("%s: %s, batch size=%zu, msg cnt=%zu",
 				   __func__, bth->zns->nls.name, bth->curlen,
 				   bth->msgcnt);

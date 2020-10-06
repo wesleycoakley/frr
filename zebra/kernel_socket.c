@@ -438,7 +438,7 @@ static int ifan_read(struct if_announcemsghdr *ifan)
 
 	if ((ifp == NULL) || ((ifp->ifindex == IFINDEX_INTERNAL)
 			      && (ifan->ifan_what == IFAN_ARRIVAL))) {
-		if (IS_ZEBRA_DEBUG_KERNEL)
+		if (IS_ZEBRA_DEBUG_KERNEL_INTERFACE)
 			zlog_debug(
 				"%s: creating interface for ifindex %d, name %s",
 				__func__, ifan->ifan_index, ifan->ifan_name);
@@ -456,7 +456,7 @@ static int ifan_read(struct if_announcemsghdr *ifan)
 	if_get_mtu(ifp);
 	if_get_metric(ifp);
 
-	if (IS_ZEBRA_DEBUG_KERNEL)
+	if (IS_ZEBRA_DEBUG_KERNEL_INTERFACE)
 		zlog_debug("%s: interface %s index %d", __func__,
 			   ifan->ifan_name, ifan->ifan_index);
 
@@ -555,7 +555,7 @@ int ifm_read(struct if_msghdr *ifm)
 		cp += rta_getsdlname(cp, ifname, &ifnlen);
 	}
 
-	if (IS_ZEBRA_DEBUG_KERNEL)
+	if (IS_ZEBRA_DEBUG_KERNEL_INTERFACE)
 		zlog_debug("%s: sdl ifname %s addrs {%s}", __func__,
 			   (ifnlen ? ifname : "(nil)"),
 			   rtatostr(ifm->ifm_addrs, fbuf, sizeof(fbuf)));
@@ -574,7 +574,7 @@ int ifm_read(struct if_msghdr *ifm)
 		 * set it back to NULL to let next check do lookup by name
 		 */
 		if (ifnlen && (strncmp(ifp->name, ifname, IFNAMSIZ) != 0)) {
-			if (IS_ZEBRA_DEBUG_KERNEL)
+			if (IS_ZEBRA_DEBUG_KERNEL_INTERFACE)
 				zlog_debug(
 					"%s: ifp name %s doesn't match sdl name %s",
 					__func__, ifp->name, ifname);
@@ -626,12 +626,12 @@ int ifm_read(struct if_msghdr *ifm)
 			/* Interface that zebra was not previously aware of, so
 			 * create. */
 			ifp = if_create_name(ifname, VRF_DEFAULT);
-			if (IS_ZEBRA_DEBUG_KERNEL)
+			if (IS_ZEBRA_DEBUG_KERNEL_INTERFACE)
 				zlog_debug("%s: creating ifp for ifindex %d",
 					   __func__, ifm->ifm_index);
 		}
 
-		if (IS_ZEBRA_DEBUG_KERNEL)
+		if (IS_ZEBRA_DEBUG_KERNEL_INTERFACE)
 			zlog_debug(
 				"%s: updated/created ifp, ifname %s, ifindex %d",
 				__func__, ifp->name, ifp->ifindex);
@@ -739,7 +739,7 @@ int ifm_read(struct if_msghdr *ifm)
 #endif /* HAVE_NET_RT_IFLIST */
 	ifp->speed = ifm->ifm_data.ifi_baudrate / 1000000;
 
-	if (IS_ZEBRA_DEBUG_KERNEL)
+	if (IS_ZEBRA_DEBUG_KERNEL_INTERFACE)
 		zlog_debug("%s: interface %s index %d", __func__, ifp->name,
 			   ifp->ifindex);
 
@@ -804,7 +804,7 @@ static void ifam_read_mesg(struct ifa_msghdr *ifm, union sockunion *addr,
 		}
 	}
 
-	if (IS_ZEBRA_DEBUG_KERNEL) {
+	if (IS_ZEBRA_DEBUG_KERNEL_INTERFACE) {
 		switch (sockunion_family(addr)) {
 		case AF_INET:
 		case AF_INET6: {
@@ -1018,7 +1018,7 @@ void rtm_read(struct rt_msghdr *rtm)
 	flags = rtm_read_mesg(rtm, &dest, &mask, &gate, ifname, &ifnlen);
 	if (!(flags & RTF_DONE))
 		return;
-	if (IS_ZEBRA_DEBUG_KERNEL)
+	if (IS_ZEBRA_DEBUG_KERNEL_INTERFACE)
 		zlog_debug("%s: got rtm of type %d (%s) addrs {%s}", __func__,
 			   rtm->rtm_type,
 			   lookup_msg(rtm_type_str, rtm->rtm_type, NULL),
@@ -1363,7 +1363,7 @@ static int kernel_read(struct thread *thread)
 
 	thread_add_read(zrouter.master, kernel_read, NULL, sock, NULL);
 
-	if (IS_ZEBRA_DEBUG_KERNEL)
+	if (IS_ZEBRA_DEBUG_KERNEL_ROUTE)
 		rtmsg_debug(&buf.r.rtm);
 
 	rtm = &buf.r.rtm;
@@ -1398,7 +1398,7 @@ static int kernel_read(struct thread *thread)
 		break;
 #endif /* RTM_IFANNOUNCE */
 	default:
-		if (IS_ZEBRA_DEBUG_KERNEL)
+		if (IS_ZEBRA_DEBUG_KERNEL_ROUTE)
 			zlog_debug("Unprocessed RTM_type: %d", rtm->rtm_type);
 		break;
 	}

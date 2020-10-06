@@ -608,7 +608,7 @@ void if_add_update(struct interface *ifp)
 		SET_FLAG(ifp->status, ZEBRA_INTERFACE_ACTIVE);
 
 		if (if_data->shutdown == IF_ZEBRA_SHUTDOWN_ON) {
-			if (IS_ZEBRA_DEBUG_KERNEL) {
+			if (IS_ZEBRA_DEBUG_KERNEL_IFACE) {
 				zlog_debug(
 					"interface %s vrf %s(%u) index %d is shutdown. Won't wake it up.",
 					ifp->name, VRF_LOGNAME(zvrf->vrf),
@@ -620,14 +620,14 @@ void if_add_update(struct interface *ifp)
 
 		if_addr_wakeup(ifp);
 
-		if (IS_ZEBRA_DEBUG_KERNEL)
+		if (IS_ZEBRA_DEBUG_KERNEL_IFACE)
 			zlog_debug(
 				"interface %s vrf %s(%u) index %d becomes active.",
 				ifp->name, VRF_LOGNAME(zvrf->vrf), ifp->vrf_id,
 				ifp->ifindex);
 
 	} else {
-		if (IS_ZEBRA_DEBUG_KERNEL)
+		if (IS_ZEBRA_DEBUG_KERNEL_IFACE)
 			zlog_debug("interface %s vrf %s(%u) index %d is added.",
 				   ifp->name, VRF_LOGNAME(zvrf->vrf),
 				   ifp->vrf_id, ifp->ifindex);
@@ -784,7 +784,7 @@ void if_delete_update(struct interface *ifp)
 	/* Mark interface as inactive */
 	UNSET_FLAG(ifp->status, ZEBRA_INTERFACE_ACTIVE);
 
-	if (IS_ZEBRA_DEBUG_KERNEL) {
+	if (IS_ZEBRA_DEBUG_KERNEL_IFACE) {
 		struct vrf *vrf = vrf_lookup_by_id(ifp->vrf_id);
 
 		zlog_debug("interface %s vrf %s(%u) index %d is now inactive.",
@@ -829,7 +829,7 @@ void if_delete_update(struct interface *ifp)
 	}
 
 	if (!ifp->configured) {
-		if (IS_ZEBRA_DEBUG_KERNEL)
+		if (IS_ZEBRA_DEBUG_KERNEL_IFACE)
 			zlog_debug("interface %s is being deleted from the system",
 				   ifp->name);
 		if_delete(&ifp);
@@ -1147,7 +1147,7 @@ void zebra_if_update_all_links(void)
 	struct zebra_if *zif;
 	struct zebra_ns *ns;
 
-	if (IS_ZEBRA_DEBUG_KERNEL)
+	if (IS_ZEBRA_DEBUG_KERNEL_IFACE)
 		zlog_info("fixup link dependencies");
 
 	ns = zebra_ns_lookup(NS_DEFAULT);
@@ -1159,7 +1159,7 @@ void zebra_if_update_all_links(void)
 		if ((zif->link_ifindex != IFINDEX_INTERNAL) && !zif->link) {
 			zif->link = if_lookup_by_index_per_ns(ns,
 							 zif->link_ifindex);
-			if (IS_ZEBRA_DEBUG_KERNEL)
+			if (IS_ZEBRA_DEBUG_KERNEL_IFACE)
 				zlog_debug("interface %s/%d's lower fixup to %s/%d",
 						ifp->name, ifp->ifindex,
 						zif->link?zif->link->name:"unk",

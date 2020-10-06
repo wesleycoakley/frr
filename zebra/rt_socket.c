@@ -90,7 +90,7 @@ static int kernel_rtm(int cmd, const struct prefix *p,
 	 * in time.
 	 */
 	if (cmd != RTM_ADD && cmd != RTM_DELETE) {
-		if (IS_ZEBRA_DEBUG_KERNEL)
+		if (IS_ZEBRA_DEBUG_KERNEL_NEXTHOP)
 			zlog_debug("%s: %s odd command %s",
 				   __func__, prefix_buf,
 				   lookup_msg(rtm_type_str, cmd, NULL));
@@ -234,7 +234,7 @@ static int kernel_rtm(int cmd, const struct prefix *p,
 				  gate ? &sin_gate : NULL, smplsp,
 				  ifindex, bh_type, metric);
 
-		if (IS_ZEBRA_DEBUG_KERNEL) {
+		if (IS_ZEBRA_DEBUG_KERNEL_NEXTHOP) {
 			if (!gate) {
 				zlog_debug(
 					"%s: %s: attention! gate not found for re",
@@ -265,7 +265,7 @@ static int kernel_rtm(int cmd, const struct prefix *p,
 			 * rtm_write() did its work. */
 		case ZEBRA_ERR_NOERROR:
 			nexthop_num++;
-			if (IS_ZEBRA_DEBUG_KERNEL)
+			if (IS_ZEBRA_DEBUG_KERNEL_NEXTHOP)
 				zlog_debug("%s: %s: successfully did NH %s",
 					   __func__, prefix_buf, gate_buf);
 			if (cmd == RTM_ADD)
@@ -298,7 +298,7 @@ static int kernel_rtm(int cmd, const struct prefix *p,
 
 	/* If there was no useful nexthop, then complain. */
 	if (nexthop_num == 0) {
-		if (IS_ZEBRA_DEBUG_KERNEL)
+		if (IS_ZEBRA_DEBUG_NEXTHOP)
 			zlog_debug(
 				"%s: No useful nexthops were found in RIB prefix %s",
 				__func__, prefix_buf);

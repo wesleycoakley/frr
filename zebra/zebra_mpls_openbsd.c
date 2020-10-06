@@ -53,7 +53,7 @@ static int kernel_send_rtmsg_v4(int action, mpls_label_t in_label,
 	int iovcnt = 0;
 	int ret;
 
-	if (IS_ZEBRA_DEBUG_KERNEL)
+	if (IS_ZEBRA_DEBUG_KERNEL_MPLS)
 		zlog_debug("%s: 0x%x, label=%u", __func__, action, in_label);
 
 	/* initialize header */
@@ -148,7 +148,7 @@ static int kernel_send_rtmsg_v6(int action, mpls_label_t in_label,
 	int iovcnt = 0;
 	int ret;
 
-	if (IS_ZEBRA_DEBUG_KERNEL)
+	if (IS_ZEBRA_DEBUG_KERNEL_MPLS)
 		zlog_debug("%s: 0x%x, label=%u", __func__, action, in_label);
 
 	/* initialize header */

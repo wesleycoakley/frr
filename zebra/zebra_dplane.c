@@ -2855,7 +2855,7 @@ enum zebra_dplane_result dplane_intf_addr_set(const struct interface *ifp,
 
 	/* Don't configure PtP addresses on broadcast ifs or reverse */
 	if (!(ifp->flags & IFF_POINTOPOINT) != !CONNECTED_PEER(ifc)) {
-		if (IS_ZEBRA_DEBUG_KERNEL || IS_ZEBRA_DEBUG_DPLANE)
+		if (IS_ZEBRA_DEBUG_KERNEL_INTERFACE || IS_ZEBRA_DEBUG_DPLANE)
 			zlog_debug("Failed to set intf addr: mismatch p2p and connected");
 
 		return ZEBRA_DPLANE_REQUEST_FAILURE;

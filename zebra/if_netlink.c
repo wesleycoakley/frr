@@ -89,7 +89,7 @@ static void set_ifindex(struct interface *ifp, ifindex_t ifi_index,
 				"Netlink is setting interface %s ifindex to reserved internal value %u",
 				ifp->name, ifi_index);
 		else {
-			if (IS_ZEBRA_DEBUG_KERNEL)
+			if (IS_ZEBRA_DEBUG_KERNEL_INTERFACE)
 				zlog_debug(
 					"interface index %d was renamed from %s to %s",
 					ifi_index, oifp->name, ifp->name);
@@ -311,7 +311,7 @@ static void netlink_vrf_change(struct nlmsghdr *h, struct rtattr *tb,
 	parse_rtattr_nested(linkinfo, IFLA_INFO_MAX, tb);
 
 	if (!linkinfo[IFLA_INFO_DATA]) {
-		if (IS_ZEBRA_DEBUG_KERNEL)
+		if (IS_ZEBRA_DEBUG_KERNEL_INTERFACE)
 			zlog_debug(
 				"%s: IFLA_INFO_DATA missing from VRF message: %s",
 				__func__, name);
@@ -321,7 +321,7 @@ static void netlink_vrf_change(struct nlmsghdr *h, struct rtattr *tb,
 	memset(attr, 0, sizeof(attr));
 	parse_rtattr_nested(attr, IFLA_VRF_MAX, linkinfo[IFLA_INFO_DATA]);
 	if (!attr[IFLA_VRF_TABLE]) {
-		if (IS_ZEBRA_DEBUG_KERNEL)
+		if (IS_ZEBRA_DEBUG_KERNEL_INTERFACE)
 			zlog_debug(
 				"%s: IFLA_VRF_TABLE missing from VRF message: %s",
 				__func__, name);
@@ -331,7 +331,7 @@ static void netlink_vrf_change(struct nlmsghdr *h, struct rtattr *tb,
 	nl_table_id = *(uint32_t *)RTA_DATA(attr[IFLA_VRF_TABLE]);
 
 	if (h->nlmsg_type == RTM_NEWLINK) {
-		if (IS_ZEBRA_DEBUG_KERNEL)
+		if (IS_ZEBRA_DEBUG_KERNEL_INTERFACE)
 			zlog_debug("RTM_NEWLINK for VRF %s(%u) table %u", name,
 				   ifi->ifi_index, nl_table_id);
 
@@ -386,7 +386,7 @@ static void netlink_vrf_change(struct nlmsghdr *h, struct rtattr *tb,
 
 	} else // h->nlmsg_type == RTM_DELLINK
 	{
-		if (IS_ZEBRA_DEBUG_KERNEL)
+		if (IS_ZEBRA_DEBUG_KERNEL_INTERFACE)
 			zlog_debug("RTM_DELLINK for VRF %s(%u)", name,
 				   ifi->ifi_index);
 
@@ -429,7 +429,7 @@ static uint32_t get_iflink_speed(struct interface *interface, int *error)
 				interface->vrf_id,
 				NULL);
 		if (sd < 0) {
-			if (IS_ZEBRA_DEBUG_KERNEL)
+			if (IS_ZEBRA_DEBUG_KERNEL_INTERFACE)
 				zlog_debug("Failure to read interface %s speed: %d %s",
 					   ifname, errno, safe_strerror(errno));
 			/* no vrf socket creation may probably mean vrf issue */
@@ -442,7 +442,7 @@ static uint32_t get_iflink_speed(struct interface *interface, int *error)
 			       (char *)&ifdata);
 	}
 	if (rc < 0) {
-		if (errno != EOPNOTSUPP && IS_ZEBRA_DEBUG_KERNEL)
+		if (errno != EOPNOTSUPP && IS_ZEBRA_DEBUG_KERNEL_INTERFACE)
 			zlog_debug(
 				"IOCTL failure to read interface %s speed: %d %s",
 				ifname, errno, safe_strerror(errno));
@@ -487,7 +487,7 @@ static int netlink_extract_vlan_info(struct rtattr *link_data,
 	memset(attr, 0, sizeof(attr));
 	parse_rtattr_nested(attr, IFLA_VLAN_MAX, link_data);
 	if (!attr[IFLA_VLAN_ID]) {
-		if (IS_ZEBRA_DEBUG_KERNEL)
+		if (IS_ZEBRA_DEBUG_KERNEL_INTERFACE)
 			zlog_debug("IFLA_VLAN_ID missing from VLAN IF message");
 		return -1;
 	}
@@ -509,7 +509,7 @@ static int netlink_extract_vxlan_info(struct rtattr *link_data,
 	memset(attr, 0, sizeof(attr));
 	parse_rtattr_nested(attr, IFLA_VXLAN_MAX, link_data);
 	if (!attr[IFLA_VXLAN_ID]) {
-		if (IS_ZEBRA_DEBUG_KERNEL)
+		if (IS_ZEBRA_DEBUG_KERNEL_INTERFACE)
 			zlog_debug(
 				"IFLA_VXLAN_ID missing from VXLAN IF message");
 		return -1;
@@ -518,7 +518,7 @@ static int netlink_extract_vxlan_info(struct rtattr *link_data,
 	vni_in_msg = *(vni_t *)RTA_DATA(attr[IFLA_VXLAN_ID]);
 	vxl_info->vni = vni_in_msg;
 	if (!attr[IFLA_VXLAN_LOCAL]) {
-		if (IS_ZEBRA_DEBUG_KERNEL)
+		if (IS_ZEBRA_DEBUG_KERNEL_INTERFACE)
 			zlog_debug(
 				"IFLA_VXLAN_LOCAL missing from VXLAN IF message");
 	} else {
@@ -533,7 +533,7 @@ static int netlink_extract_vxlan_info(struct rtattr *link_data,
 	}
 
 	if (!attr[IFLA_VXLAN_LINK]) {
-		if (IS_ZEBRA_DEBUG_KERNEL)
+		if (IS_ZEBRA_DEBUG_KERNEL_INTERFACE)
 			zlog_debug("IFLA_VXLAN_LINK missing from VXLAN IF message");
 	} else {
 		ifindex_link =
@@ -598,7 +598,7 @@ static int netlink_bridge_vxlan_update(struct interface *ifp,
 		return 0;
 
 	access_vlan = (vlanid_t)vinfo->vid;
-	if (IS_ZEBRA_DEBUG_KERNEL)
+	if (IS_ZEBRA_DEBUG_KERNEL_INTERFACE)
 		zlog_debug("Access VLAN %u for VxLAN IF %s(%u)", access_vlan,
 				ifp->name, ifp->ifindex);
 	zebra_l2_vxlanif_update_access_vlan(ifp, access_vlan);
@@ -742,7 +742,7 @@ static int netlink_interface(struct nlmsghdr *h, ns_id_t ns_id, int startup)
 
 	/* check for wireless messages to ignore */
 	if ((tb[IFLA_WIRELESS] != NULL) && (ifi->ifi_change == 0)) {
-		if (IS_ZEBRA_DEBUG_KERNEL)
+		if (IS_ZEBRA_DEBUG_KERNEL_NETLINK)
 			zlog_debug("%s: ignoring IFLA_WIRELESS message",
 				   __func__);
 		return 0;
@@ -1123,7 +1123,7 @@ int netlink_interface_addr(struct nlmsghdr *h, ns_id_t ns_id, int startup)
 	else
 		kernel_flags = ifa->ifa_flags;
 
-	if (IS_ZEBRA_DEBUG_KERNEL) /* remove this line to see initial ifcfg */
+	if (IS_ZEBRA_DEBUG_KERNEL_INTERFACE) /* remove this line to see initial ifcfg */
 	{
 		char buf[BUFSIZ];
 		zlog_debug("netlink_interface_addr %s %s flags 0x%x:",
@@ -1325,7 +1325,7 @@ int netlink_link_change(struct nlmsghdr *h, ns_id_t ns_id, int startup)
 
 	/* check for wireless messages to ignore */
 	if ((tb[IFLA_WIRELESS] != NULL) && (ifi->ifi_change == 0)) {
-		if (IS_ZEBRA_DEBUG_KERNEL)
+		if (IS_ZEBRA_DEBUG_KERNEL_NETLINK)
 			zlog_debug("%s: ignoring IFLA_WIRELESS message",
 				   __func__);
 		return 0;
@@ -1392,7 +1392,7 @@ int netlink_link_change(struct nlmsghdr *h, ns_id_t ns_id, int startup)
 		if (ifp == NULL
 		    || !CHECK_FLAG(ifp->status, ZEBRA_INTERFACE_ACTIVE)) {
 			/* Add interface notification from kernel */
-			if (IS_ZEBRA_DEBUG_KERNEL)
+			if (IS_ZEBRA_DEBUG_KERNEL_INTERFACE)
 				zlog_debug(
 					"RTM_NEWLINK ADD for %s(%u) vrf_id %u type %d sl_type %d master %u flags 0x%x",
 					name, ifi->ifi_index, vrf_id, zif_type,
@@ -1448,7 +1448,7 @@ int netlink_link_change(struct nlmsghdr *h, ns_id_t ns_id, int startup)
 				zebra_l2if_update_bond_slave(ifp, bond_ifindex);
 		} else if (ifp->vrf_id != vrf_id) {
 			/* VRF change for an interface. */
-			if (IS_ZEBRA_DEBUG_KERNEL)
+			if (IS_ZEBRA_DEBUG_KERNEL_INTERFACE)
 				zlog_debug(
 					"RTM_NEWLINK vrf-change for %s(%u) vrf_id %u -> %u flags 0x%x",
 					name, ifp->ifindex, ifp->vrf_id, vrf_id,
@@ -1459,7 +1459,7 @@ int netlink_link_change(struct nlmsghdr *h, ns_id_t ns_id, int startup)
 			bool was_bridge_slave, was_bond_slave;
 
 			/* Interface update. */
-			if (IS_ZEBRA_DEBUG_KERNEL)
+			if (IS_ZEBRA_DEBUG_KERNEL_INTERFACE)
 				zlog_debug(
 					"RTM_NEWLINK update for %s(%u) sl_type %d master %u flags 0x%x",
 					name, ifp->ifindex, zif_slave_type,
@@ -1488,7 +1488,7 @@ int netlink_link_change(struct nlmsghdr *h, ns_id_t ns_id, int startup)
 			if (if_is_no_ptm_operative(ifp)) {
 				ifp->flags = ifi->ifi_flags & 0x0000fffff;
 				if (!if_is_no_ptm_operative(ifp)) {
-					if (IS_ZEBRA_DEBUG_KERNEL)
+					if (IS_ZEBRA_DEBUG_KERNEL_INTERFACE)
 						zlog_debug(
 							"Intf %s(%u) has gone DOWN",
 							name, ifp->ifindex);
@@ -1497,7 +1497,7 @@ int netlink_link_change(struct nlmsghdr *h, ns_id_t ns_id, int startup)
 				} else if (if_is_operative(ifp)) {
 					/* Must notify client daemons of new
 					 * interface status. */
-					if (IS_ZEBRA_DEBUG_KERNEL)
+					if (IS_ZEBRA_DEBUG_KERNEL_INTERFACE)
 						zlog_debug(
 							"Intf %s(%u) PTM up, notifying clients",
 							name, ifp->ifindex);
@@ -1522,13 +1522,13 @@ int netlink_link_change(struct nlmsghdr *h, ns_id_t ns_id, int startup)
 			} else {
 				ifp->flags = ifi->ifi_flags & 0x0000fffff;
 				if (if_is_operative(ifp)) {
-					if (IS_ZEBRA_DEBUG_KERNEL)
+					if (IS_ZEBRA_DEBUG_KERNEL_INTERFACE)
 						zlog_debug(
 							"Intf %s(%u) has come UP",
 							name, ifp->ifindex);
 					if_up(ifp);
 				} else {
-					if (IS_ZEBRA_DEBUG_KERNEL)
+					if (IS_ZEBRA_DEBUG_KERNEL_INTERFACE)
 						zlog_debug(
 							"Intf %s(%u) has gone DOWN",
 							name, ifp->ifindex);
@@ -1559,14 +1559,14 @@ int netlink_link_change(struct nlmsghdr *h, ns_id_t ns_id, int startup)
 	} else {
 		/* Delete interface notification from kernel */
 		if (ifp == NULL) {
-			if (IS_ZEBRA_DEBUG_KERNEL)
+			if (IS_ZEBRA_DEBUG_KERNEL_INTERFACE)
 				zlog_debug(
 					"RTM_DELLINK for unknown interface %s(%u)",
 					name, ifi->ifi_index);
 			return 0;
 		}
 
-		if (IS_ZEBRA_DEBUG_KERNEL)
+		if (IS_ZEBRA_DEBUG_KERNEL_INTERFACE)
 			zlog_debug("RTM_DELLINK for %s(%u)", name,
 				   ifp->ifindex);
 

@@ -139,7 +139,7 @@ netlink_rule_msg_encode(int cmd, const struct zebra_dplane_ctx *ctx,
 			return 0;
 	}
 
-	if (IS_ZEBRA_DEBUG_KERNEL)
+	if (IS_ZEBRA_DEBUG_KERNEL_NETLINK)
 		zlog_debug(
 			"Tx %s family %s IF %s Pref %u Fwmark %u Src %s Dst %s Table %u",
 			nl_msg_type_to_str(cmd), nl_family_to_str(family),
@@ -253,7 +253,7 @@ int netlink_rule_change(struct nlmsghdr *h, ns_id_t ns_id, int startup)
 	if (frh->family != AF_INET && frh->family != AF_INET6) {
 		if (frh->family == RTNL_FAMILY_IPMR
 		    || frh->family == RTNL_FAMILY_IP6MR) {
-			if (IS_ZEBRA_DEBUG_KERNEL)
+			if (IS_ZEBRA_DEBUG_KERNEL_NETLINK)
 				zlog_debug(
 					"Received rule netlink that we are ignoring for family %u, rule change: %u",
 					frh->family, h->nlmsg_type);
@@ -348,7 +348,7 @@ int netlink_rule_change(struct nlmsghdr *h, ns_id_t ns_id, int startup)
 	if (!if_lookup_by_name_per_ns(zns, ifname))
 		return 0;
 
-	if (IS_ZEBRA_DEBUG_KERNEL)
+	if (IS_ZEBRA_DEBUG_KERNEL_NETLINK)
 		zlog_debug(
 			"Rx %s family %s IF %s Pref %u Src %s Dst %s Table %u",
 			nl_msg_type_to_str(h->nlmsg_type),

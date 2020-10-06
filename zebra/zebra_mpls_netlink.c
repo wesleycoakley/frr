@@ -41,7 +41,7 @@ static ssize_t netlink_lsp_msg_encoder(struct zebra_dplane_ctx *ctx, void *buf,
 
 		/* Validate */
 		if (dplane_ctx_get_best_nhlfe(ctx) == NULL) {
-			if (IS_ZEBRA_DEBUG_KERNEL || IS_ZEBRA_DEBUG_MPLS)
+			if (IS_ZEBRA_DEBUG_KERNEL_NEXTHOP || IS_ZEBRA_DEBUG_MPLS)
 				zlog_debug("LSP in-label %u: update fails, no best NHLFE",
 					   dplane_ctx_get_in_label(ctx));
 			return -1;
